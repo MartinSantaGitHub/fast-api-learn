@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  main:
+    container_name: "main_books_container"
+    image: "main_books:1.0"
+    env_file:
+      - ./.env
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/src
+    command: >
+      sh -c "python wait_for_db.py && 
+             uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    environment:
+      - DB_DRIVER=${DB_DRIVER}
+      - DB_HOST=${DB_SERVER}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
+
+  db:
+    container_name: "db_books_container"
+    image: postgres:13-alpine
+    ports:
+      - "5434:5432"
+    volumes:
+      - db-books-data:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+
+volumes:
+  db-books-data:
