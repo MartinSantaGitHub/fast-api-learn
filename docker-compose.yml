@@ -9,12 +9,12 @@ services:
     build:
       context: .
     ports:
-      - "8000:8000"
+      - "8001:8001"
     volumes:
       - ./src:/src
     command: >
       sh -c "python wait_for_db.py && 
-             uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+             uvicorn main:app --host 0.0.0.0 --port 8001 --reload"
     environment:
       - DB_DRIVER=${DB_DRIVER}
       - DB_HOST=${DB_SERVER}
@@ -28,7 +28,7 @@ services:
     container_name: "db_books_container"
     image: postgres:13-alpine
     ports:
-      - "5434:5432"
+      - "5435:5432"
     volumes:
       - db-books-data:/var/lib/postgresql/data
     env_file:
